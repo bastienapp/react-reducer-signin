@@ -1,9 +1,9 @@
-import RemoveMe from './components/RemoveMe';
+import SignIn from './components/SignIn';
 
 function App() {
   return (
     <div className="App">
-      <RemoveMe />
+      <SignIn />
     </div>
   );
 }
