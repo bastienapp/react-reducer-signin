@@ -1,5 +1,13 @@
 body {
   margin: 0;
+  display: flex;
+  justify-content: center;
+}
+.SignIn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 label {
   display: block;

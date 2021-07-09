@@ -56,7 +56,7 @@ function SignIn() {
   };
 
   return (
-    <>
+    <div className="SignIn">
       <h1>Sign in</h1>
       {load && <p>Loading...</p>}
       {!load && !user && (
@@ -93,7 +93,7 @@ function SignIn() {
           </button>
         </div>
       )}
-    </>
+    </div>
   );
 }
 
