@@ -1,57 +1,43 @@
-import React, { useReducer } from 'react';
-import {
-  reducer,
-  SIGNIN_CHANGE,
-  SIGNIN_FAILURE,
-  SIGNIN_LOAD,
-  SIGNIN_SUCCESS,
-  SIGNOUT,
-} from '../reducers/signInReducer';
+import React, { useState } from 'react';
 import { signIn, signOut } from '../services/auth';
 
 function SignIn() {
-  const [state, dispatch] = useReducer(reducer, {
+  const [userForm, setUserForm] = useState({
     email: 'email@test.com',
     password: 'test123456',
-    load: false,
-    error: null,
-    user: null,
   });
+  const [userConnected, setUserConnected] = useState(null);
+  const [load, setLoad] = useState(false);
+  const [error, setError] = useState(null);
 
-  const { email, password, load, error, user } = state;
+  const { email, password } = userForm;
 
   const onChange = (e) => {
-    dispatch({
-      type: SIGNIN_CHANGE,
-      payload: {
-        name: e.target.name,
-        value: e.target.value,
-      },
+    setUserForm({
+      ...userForm,
+      [e.target.name]: e.target.value,
     });
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    dispatch({ type: SIGNIN_LOAD });
+    setLoad(true);
+    setError(null);
 
     signIn(email, password)
       .then((response) => {
-        dispatch({
-          type: SIGNIN_SUCCESS,
-          payload: response,
-        });
+        setLoad(false);
+        setUserConnected(response);
       })
       .catch((err) => {
-        dispatch({
-          type: SIGNIN_FAILURE,
-          payload: err.message,
-        });
+        setLoad(false);
+        setError(err.message);
       });
   };
 
   const onDisconnect = () => {
     signOut().then(() => {
-      dispatch({ type: SIGNOUT });
+      setUserConnected(null);
     });
   };
 
@@ -59,7 +45,7 @@ function SignIn() {
     <div className="SignIn">
       <h1>Sign in</h1>
       {load && <p>Loading...</p>}
-      {!load && !user && (
+      {!load && !userConnected && (
         <form onSubmit={onSubmit}>
           <label htmlFor="email">
             <span>Email: </span>
@@ -85,9 +71,9 @@ function SignIn() {
           <input type="submit" value="Sign In" />
         </form>
       )}
-      {user && (
+      {userConnected && (
         <div>
-          <p>Welcome {user.name}</p>
+          <p>Welcome {userConnected.name}</p>
           <button type="button" onClick={onDisconnect}>
             Disconnect
           </button>
