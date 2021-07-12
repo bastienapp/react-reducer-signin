@@ -1,43 +1,38 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
+import { UserContext } from '../contexts/UserContext';
 import { signIn, signOut } from '../services/auth';
 
 function SignIn() {
-  const [userForm, setUserForm] = useState({
-    email: 'email@test.com',
-    password: 'test123456',
-  });
-  const [userConnected, setUserConnected] = useState(null);
-  const [load, setLoad] = useState(false);
-  const [error, setError] = useState(null);
-
-  const { email, password } = userForm;
+  const { state, dispatch } = useContext(UserContext);
+  const { email, password, load, error, userConnected } = state;
 
   const onChange = (e) => {
-    setUserForm({
-      ...userForm,
-      [e.target.name]: e.target.value,
+    dispatch({
+      type: 'FORM_UPDATED',
+      payload: {
+        name: e.target.name,
+        value: e.target.value,
+      },
     });
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    setLoad(true);
-    setError(null);
+    dispatch({ type: 'LOADING' });
 
     signIn(email, password)
       .then((response) => {
-        setLoad(false);
-        setUserConnected(response);
+        // {id: 1, email: "..."}
+        dispatch({ type: 'SIGNIN_SUCCESS', payload: response });
       })
       .catch((err) => {
-        setLoad(false);
-        setError(err.message);
+        dispatch({ type: 'SIGNIN_FAILED', payload: err.message });
       });
   };
 
   const onDisconnect = () => {
     signOut().then(() => {
-      setUserConnected(null);
+      dispatch({ type: 'DISCONNECT' });
     });
   };
 
